@@ -22,7 +22,7 @@ else
         <div class="card-body p-4">
             <div class="row pb-3">
                 <div class="col-12 text-end">
-                    <button @onclick="OnShowModalClick" class="btn btn-lg btn-secondary" style="width:250px;">
+                    <button @onclick="OnShowModalClick" class="btn btn-lg btn-success" style="width:250px;">
                         <i class="bi bi-plus-square"></i> Add New Employee
                     </button>
                 </div>
@@ -94,6 +94,12 @@ else
             <div class="text-center">               
                 <div class="container">
                     <form class="form-card" onsubmit="event.preventDefault()">
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger">
+                                @errorMessage
+                            </div>
+                        }
                         <div class="row justify-content-between text-left">
                             <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">First name<span class="text-danger"> *</span></label> <input type="text" id="fname" @bind="employee.Firstname" class="form-control" name="fname"> </div>
                             <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">Last name<span class="text-danger"> *</span></label> <input type="text" id="lname" @bind="employee.Lastname" name="lname" class="form-control"> </div>
@@ -145,7 +151,7 @@ else
         </FooterTemplate>
     </Modal>
 
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+    <div class="toast-container position-fixed top-50 start-50 translate-middle" style="z-index: 1050;">
         <div class="toast align-items-center text-white bg-warning border-0" id="deleteToast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body">
@@ -194,6 +200,33 @@ else
         await modal?.HideAsync();
     }
 
+    private string errorMessage;
+
+    private bool ValidateForm()
+    {
+        if (string.IsNullOrWhiteSpace(employee.Firstname) ||
+            string.IsNullOrWhiteSpace(employee.Lastname) ||
+            string.IsNullOrWhiteSpace(employee.Email) ||
+            string.IsNullOrWhiteSpace(employee.Telephone) ||
+            employee.DateOfBirth == default ||
+            employee.StartDate == default ||
+            string.IsNullOrWhiteSpace(employee.Town) ||
+            string.IsNullOrWhiteSpace(employee.County) ||
+            string.IsNullOrWhiteSpace(employee.Postcode) ||
+            string.IsNullOrWhiteSpace(employee.JobTitle) ||
+            string.IsNullOrWhiteSpace(employee.Team) ||
+            string.IsNullOrWhiteSpace(employee.LineManager) ||
+            string.IsNullOrWhiteSpace(employee.Address1) ||
+            string.IsNullOrWhiteSpace(employee.Address2))
+        {
+            errorMessage = "Please fill out all required fields.";
+            return false;
+        }
+
+        errorMessage = string.Empty; // Clear the error message if validation passes
+        return true;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         isProcessing = true;
@@ -218,6 +251,11 @@ else
     {
         try
         {
+            if (!ValidateForm())
+            {
+                return;
+            }
+
             Models.EmployeeDTO employeeDTO = new Models.EmployeeDTO
                 {
                     employee = new Models.Employee
