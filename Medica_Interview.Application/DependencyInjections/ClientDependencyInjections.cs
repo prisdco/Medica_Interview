@@ -1,11 +1,14 @@
 ﻿using MediatR;
+using Medica_Interview.Application.Extensions;
 using Medica_Interview.Application.UseCase.Queries.CsvFileData;
+using Medica_Interview.Infrastructure;
 using Medica_Interview.Infrastructure.Entities;
 using Medica_Interview.Infrastructure.Interface;
 using Medica_Interview.Infrastructure.Repositories;
 using Medica_Interview.Infrastructure.ServiceModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,10 +33,21 @@ namespace Medica_Interview.Application.DependencyInjections
             services.AddSingleton<IDataSourceReader>(provider =>
             {
                 var logger = provider.GetRequiredService<ILogger<CsvFileRepo>>();
-                return new CsvFileRepo(logger, configuration);
+                var dataSourceType = configuration["DataSource"];
+                return dataSourceType switch
+                {
+                    "Database" => new DatabaseRepo(provider.GetRequiredService<ApplicationDbContext>()),
+                    "Csv" => new CsvFileRepo(logger, configuration),
+                    _ => throw new InvalidOperationException("Invalid data source configuration")
+                };
             });
             services.AddScoped<IRepository<Employee>, RecordRepository>();
+            // Register new extension data source type to services
+            services.AddDatabaseSourceType<DatabaseRepo>();
             services.AddMediatR(typeof(AllEmployeesQuery.AllEmployeesQueryHandler).GetTypeInfo().Assembly);
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer("YourConnectionStringHere"));
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {

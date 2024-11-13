@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Medica_Interview.Application.UseCase.Commands;
 using Medica_Interview.Application.UseCase.Queries.CsvFileData;
+using Medica_Interview.Application.UseCase.Queries.DatabaseSource;
 using Medica_Interview.Infrastructure.ServiceModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,35 @@ namespace Medica_API.Controllers
             Logger.LogInformation($"Received request to retrieve all employees");
             var response = await this.Mediator.Send(new AllEmployeesQuery());
          
+            Logger.LogInformation($"Finished retriveing employees");
+            Logger.LogInformation("====================================================================================");
+            return Ok(response.Value);
+        }
+
+        /// <summary>
+        /// This endpoint is used to retrieve a list of all employee from database
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///  GET /fetch-all 
+        ///  {
+        ///  }
+        /// </remarks>
+        ///
+        [AllowAnonymous]
+        [HttpGet("employees-from-database")]
+        [ProducesResponseType(typeof(ResultViewModel), 200)]
+        [ProducesResponseType(typeof(Result<string>), 400)]
+        [ProducesResponseType(typeof(Result<string>), 500)]
+
+        public async Task<IActionResult> GetDatabaseEmployeeAsync()
+        {
+            Logger.LogInformation($"Received request to retrieve all employees");
+            var response = await this.Mediator.Send(new DbEmployeesQuery());
+
             Logger.LogInformation($"Finished retriveing employees");
             Logger.LogInformation("====================================================================================");
             return Ok(response.Value);
