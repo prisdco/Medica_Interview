@@ -1,0 +1,344 @@
+﻿@page "/employees"
+@inject EmployeeService EmployeeService
+@inject IJSRuntime JS
+
+@if(isProcessing)
+{
+    <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading" />
+    </div>
+}
+else
+
+{
+    <div class="card shadow border-0 m-4">
+        <div class="card-header bg-black bg-gradient ml-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2">Employee List</h2>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="row pb-3">
+                <div class="col-12 text-end">
+                    <button @onclick="OnShowModalClick" class="btn btn-lg btn-secondary" style="width:250px;">
+                        <i class="bi bi-plus-square"></i> Add New Employee
+                    </button>
+                </div>
+            </div>
+
+            <Grid @ref="grid"
+                  TItem="Models.Employee"
+                  Class="table table-hover table-bordered table-striped"
+                  DataProvider="EmployeesDataProvider"
+                  AllowSelection="true" 
+                  SelectedItemsChanged="@OnSelectedItemsChangedCallback"
+                  EmptyText="No records to display"
+                  AllowPaging="true"
+                  PageSize="5"
+                  AllowFiltering="true"
+                  Responsive="true">
+
+                <GridColumns>
+                    <GridColumn TItem="Models.Employee" HeaderText="Email" PropertyName="Email">
+                        @context.Email
+                    </GridColumn>
+                    <GridColumn TItem="Models.Employee" HeaderText="Employee Name" PropertyName="Name">
+                        @context.Firstname @context.Lastname
+                    </GridColumn>
+                    <GridColumn TItem="Models.Employee" HeaderText="Date Of Birth" PropertyName="DateOfBirth">
+                        @context.DateOfBirth
+                    </GridColumn>
+                    <GridColumn TItem="Models.Employee" HeaderText="Telephone" PropertyName="Telephone">
+                        @context.Telephone
+                    </GridColumn>
+
+                    <GridColumn TItem="Models.Employee" HeaderText="Town" PropertyName="Town">
+                        @context.Town
+                    </GridColumn>
+                    <GridColumn TItem="Models.Employee" HeaderText="Team" PropertyName="Team">
+                        @context.Team
+                    </GridColumn>
+                    <GridColumn TItem="Models.Employee" HeaderText="County" PropertyName="County">
+                        @context.County
+                    </GridColumn>
+                    <GridColumn TItem="Models.Employee" HeaderText="JobTitle" PropertyName="JobTitle">
+                        @context.JobTitle
+                    </GridColumn>
+                    <GridColumn TItem="Models.Employee" HeaderText="LineManager" PropertyName="LineManager">
+                        @context.LineManager
+                    </GridColumn>
+
+                    <GridColumn TItem="Models.Employee" HeaderText="ProfilePicture" PropertyName="ProfilePicture">
+                        @context.ProfilePicture
+                    </GridColumn>
+                    <GridColumn TItem="Models.Employee" HeaderText="Postcode" PropertyName="Postcode">
+                        @context.Postcode
+                    </GridColumn>
+                    <GridColumn TItem="Models.Employee" HeaderText="StartDate" PropertyName="StartDate">
+                        @context.StartDate
+                    </GridColumn>
+                    <GridColumn TItem="Models.Employee" HeaderText="Address1" PropertyName="Address1">
+                        @context.Address1 @context.Address2
+                    </GridColumn>
+                </GridColumns>
+
+            </Grid>
+
+        </div>
+    </div>
+
+    <Modal @ref="modal" Title="Add New Employee" Class="container-fluid" style="width: 100%">
+        <BodyTemplate>
+            <div class="text-center">               
+                <div class="container">
+                    <form class="form-card" onsubmit="event.preventDefault()">
+                        <div class="row justify-content-between text-left">
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">First name<span class="text-danger"> *</span></label> <input type="text" id="fname" @bind="employee.Firstname" class="form-control" name="fname"> </div>
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">Last name<span class="text-danger"> *</span></label> <input type="text" id="lname" @bind="employee.Lastname" name="lname" class="form-control"> </div>
+                        </div>
+                        <div class="row justify-content-between text-left">
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">Email<span class="text-danger"> *</span></label> <input type="text" id="email" class="form-control" @bind="employee.Email" name="email" placeholder=""> </div>
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">Phone number<span class="text-danger"> *</span></label> <input type="text" id="mob" class="form-control" @bind="employee.Telephone" placeholder=""> </div>
+                        </div>
+                        <div class="row justify-content-between text-left">
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">DateOfBirth<span class="text-danger"> *</span></label> <input type="date" id="dateofbirth" class="form-control" @bind="employee.DateOfBirth" > </div>
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">StartDate<span class="text-danger"> *</span></label> <input type="date" id="startdate" class="form-control" @bind="employee.StartDate"> </div>
+                        </div>
+                                              
+                        <div class="row justify-content-between text-left">
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">Town<span class="text-danger"> *</span></label> <input type="text" id="Town" class="form-control" @bind="employee.Town"> </div>
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">County<span class="text-danger"> *</span></label> <input type="text" id="County" class="form-control" @bind="employee.County"> </div>
+                        </div>
+                        <div class="row justify-content-between text-left">
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">PostCode<span class="text-danger"> *</span></label> <input type="text" id="Postcode" class="form-control" @bind="employee.Postcode" placeholder=""> </div>
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">Job Title<span class="text-danger"> *</span></label> <input type="text" id="JobTitle" class="form-control" @bind="employee.JobTitle" placeholder=""> </div>
+                        </div>
+                        <div class="row justify-content-between text-left">
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">Team<span class="text-danger"> *</span></label> <input type="text" id="Team" class="form-control" @bind="employee.Team" placeholder=""> </div>
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">Line manager<span class="text-danger"> *</span></label> <input type="text" id="linemanager" class="form-control" @bind="employee.LineManager" placeholder=""> </div>
+                        </div>
+                        <div class="row justify-content-between text-left">
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">Address1<span class="text-danger"> *</span></label> <input type="text" id="Address1" class="form-control" name="Address1" placeholder="" @bind="employee.Address1"> </div>
+                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3 text-start">Address2<span class="text-danger"> *</span></label> <input type="text" id="Address2" class="form-control" @bind="employee.Address2" placeholder=""> </div>
+                        </div>
+                        <br />
+                        <div class="row justify-content-between text-left">
+                            <div class="form-group col-sm-12 flex-column d-flex">
+                                <label class="form-control-label px-3 text-start">Upload Resume</label>
+                                <InputFile OnChange="HandleFileSelected" />
+                                @if (!string.IsNullOrEmpty(employee.ProfilePicture))
+                                {
+                                    <p class="mt-2">Uploaded File: @employee.ProfilePicture</p>
+                                }
+                            </div>
+                        </div>
+                                                
+                    </form>
+                </div>
+            </div>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+            <Button Color="ButtonColor.Primary" @onclick="OnSubmit">Save changes</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
+        <div class="toast align-items-center text-white bg-warning border-0" id="deleteToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Are you sure you want to delete this user?
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-danger btn-sm" @onclick="ConfirmDelete">Yes</button>
+                    <button type="button" class="btn btn-secondary btn-sm" @onclick="CancelDelete">No</button>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    function showDeleteToast() {
+        var toastElement = document.getElementById('deleteToast');
+        var toast = new bootstrap.Toast(toastElement);
+        toast.show();
+    }
+    function hideDeleteToast() {
+        var toastElement = document.getElementById('deleteToast');
+        var toast = new bootstrap.Toast(toastElement);
+        toast.hide();
+    }
+</script>
+
+@code {
+    public bool isProcessing { get; set; } = false;
+    private HashSet<Employee> selectedEmployees = new();
+    private IEnumerable<Models.Employee> employees;
+    private Models.Employee employee = new Models.Employee();
+    private Models.EmployeeDTO deleteEmployee = new Models.EmployeeDTO();
+    Grid<Models.Employee> grid;
+
+    private Modal modal;
+
+    private async Task OnShowModalClick()
+    {
+        await modal?.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal?.HideAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isProcessing = true;
+        await GetEmployees();
+        isProcessing = false;
+    }
+
+    private async Task GetEmployees()
+    {
+        employees = await EmployeeService.GetEmployeesAsync();
+    }
+
+    private async Task<GridDataProviderResult<Models.Employee>> EmployeesDataProvider(GridDataProviderRequest<Models.Employee> request)
+    {
+        if (employees is null)
+            await GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private async Task OnSubmit()
+    {
+        try
+        {
+            Models.EmployeeDTO employeeDTO = new Models.EmployeeDTO
+                {
+                    employee = new Models.Employee
+                    {
+                        Firstname = employee.Firstname,
+                        Lastname = employee.Lastname,
+                        Email = employee.Email,
+                        Telephone = employee.Telephone,
+                        DateOfBirth = DateOnly.Parse(employee.DateOfBirthFormatted),
+                        Address1 = employee.Address1,
+                        Address2 = employee.Address2,
+                        Town = employee.Town,
+                        County = employee.County,
+                        Postcode = employee.Postcode,
+                        JobTitle = employee.JobTitle,
+                        Team = employee.Team,
+                        LineManager = employee.LineManager,
+                        StartDate = DateOnly.Parse(employee.StartDateFormatted),
+                        ProfilePicture = employee.ProfilePicture
+                    }
+                };
+            // Add employee through the service
+            await EmployeeService.AddEmployeesAsync(employeeDTO);
+            await GetEmployees();
+            await grid.RefreshDataAsync();
+
+            // Optionally reset the form and close the modal
+            employee = new Models.Employee();
+            await modal?.HideAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred: {ex.Message}");
+            await JS.InvokeVoidAsync("alert", "An error occurred while submitting the form. Please try again.");
+        }
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var uploadedFile = e.File;
+
+            if (uploadedFile != null)
+            {
+                // Bind the uploaded file name to the Employee object
+                employee.ProfilePicture = uploadedFile.Name;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred: {ex.Message}");
+            await JS.InvokeVoidAsync("alert", "An error occurred while uploading the picture. Please try again.");
+        }
+    }
+
+
+    private async Task OnSelectedItemsChanged(HashSet<Models.Employee> selectedEmployee)
+    {
+        // Handle the selected items
+        await OnDeleteEmployee(selectedEmployee.FirstOrDefault());
+    }
+
+    private EventCallback<HashSet<Models.Employee>> OnSelectedItemsChangedCallback => EventCallback.Factory.Create<HashSet<Models.Employee>>(this, OnSelectedItemsChanged);
+
+    private async Task OnDeleteEmployee(Models.Employee selectedEmployee)
+    {        
+        if (selectedEmployee is not null)
+        {
+            // Show the delete toast to confirm
+            await JS.InvokeVoidAsync("showDeleteToast");
+            Models.EmployeeDTO employeeDTO = new Models.EmployeeDTO
+                {
+                    employee = new Models.Employee
+                    {
+                        Firstname = selectedEmployee.Firstname,
+                        Lastname = selectedEmployee.Lastname,
+                        Email = selectedEmployee.Email,
+                        Telephone = selectedEmployee.Telephone,
+                        DateOfBirth = DateOnly.Parse(selectedEmployee.DateOfBirthFormatted),
+                        Address1 = selectedEmployee.Address1,
+                        Address2 = selectedEmployee.Address2,
+                        Town = selectedEmployee.Town,
+                        County = selectedEmployee.County,
+                        Postcode = selectedEmployee.Postcode,
+                        JobTitle = selectedEmployee.JobTitle,
+                        Team = selectedEmployee.Team,
+                        LineManager = selectedEmployee.LineManager,
+                        StartDate = DateOnly.Parse(selectedEmployee.StartDateFormatted),
+                        ProfilePicture = selectedEmployee.ProfilePicture
+                    }
+                };
+
+            deleteEmployee = employeeDTO;
+        }
+    }
+
+    private async Task ConfirmDelete()
+    {
+        try
+        {
+            // Hide the toast
+            await JS.InvokeVoidAsync("hideDeleteToast");
+
+            await EmployeeService.DeleteEmployeesAsync(deleteEmployee);
+
+            await GetEmployees();
+
+            await grid.RefreshDataAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred: {ex.Message}");
+            await JS.InvokeVoidAsync("alert", "An error occurred while deleting employee. Please try again.");
+        }
+    }
+
+    private async Task CancelDelete()
+    {
+        // Hide the toast without deleting
+        await JS.InvokeVoidAsync("hideDeleteToast");
+    }
+
+}
