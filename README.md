@@ -1,5 +1,5 @@
 # Medica_Interview
-This is blazor server .net 8 project.
+This is blazor server and API .net 8 project.
 Note: Ensure the Assests/dataset is present at the API library 
 Note: Do not run the database endpoint as it is not connected to any database
 
