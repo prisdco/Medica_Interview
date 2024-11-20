@@ -10,16 +10,19 @@ namespace Medica_API.Controllers
 
     public class BaseController : ControllerBase
     {
-        private IMediator? _mediator;
-        private ILogger<BaseController>? _logger;
-        private IConfiguration? _config;
-
-        protected IConfiguration Configuration => _config ?? (_config = HttpContext.RequestServices.GetService<IConfiguration>());
-
-        protected IMediator Mediator => _mediator ?? (_mediator = HttpContext.RequestServices.GetService<IMediator>());
-        protected ILogger<BaseController> Logger => _logger ?? (_logger = HttpContext.RequestServices.GetService<ILogger<BaseController>>());
+        protected readonly IMediator Mediator;
+        protected readonly ILogger Logger;
+        protected readonly IConfiguration? Config;
 
        
+        public BaseController(IMediator _Mediator, ILogger _Logger, IConfiguration _Config)
+        {
+            Mediator = _Mediator;
+            Logger = _Logger;
+            Config = _Config;
+        }
+       
+              
 
     }
 }

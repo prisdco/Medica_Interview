@@ -24,6 +24,10 @@ namespace Medica_Interview.Application.UseCase.Queries.CsvFileData
             {
 
                 var employees = await _repository.GetAll();
+                if (employees is null)
+                {
+                    return (Result<IEnumerable<Employee>>)ResultViewModel.Fail("Unable to fetch employee");
+                }
                 List<Employee> allEmployees = new List<Employee>();
                 foreach (var employe in employees)
                 {
@@ -37,7 +41,7 @@ namespace Medica_Interview.Application.UseCase.Queries.CsvFileData
                     allEmployee.Firstname = employe.Firstname;
                     allEmployee.Lastname = employe.Lastname;
                     allEmployee.Email = employe.Email;
-                    allEmployee.StartDate = employe.StartDate;  
+                    allEmployee.StartDate = employe.StartDate;
                     allEmployee.County = employe.County;
                     allEmployee.JobTitle = employe.JobTitle;
                     allEmployee.LineManager = employe.LineManager;

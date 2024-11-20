@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using MediatR;
 using Medica_Interview.Application.UseCase.Commands;
 using Medica_Interview.Application.UseCase.Queries.CsvFileData;
 using Medica_Interview.Application.UseCase.Queries.DatabaseSource;
@@ -13,6 +14,10 @@ namespace Medica_API.Controllers
     [ApiVersion("1.0")]
     public class EmployeeController : BaseController
     {
+        public EmployeeController(IMediator mediator, ILogger<EmployeeController> logger, IConfiguration config)
+        : base(mediator, logger, config)
+        {
+        }
         /// <summary>
         /// This endpoint is used to retrieve a list of all employee profile
         /// </summary>
@@ -36,7 +41,13 @@ namespace Medica_API.Controllers
         {
             Logger.LogInformation($"Received request to retrieve all employees");
             var response = await this.Mediator.Send(new AllEmployeesQuery());
-         
+
+            if (!response.IsSuccess)
+            {
+                Logger.LogWarning("Failed to retrieve employees: {Message}", response.Error);
+                return BadRequest(ResultViewModel.Fail(response.Error)); // Ensure this contains the failure message.
+            }
+
             Logger.LogInformation($"Finished retriveing employees");
             Logger.LogInformation("====================================================================================");
             return Ok(response.Value);
@@ -76,6 +87,9 @@ namespace Medica_API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("save-employee")]
+        [ProducesResponseType(typeof(ResultViewModel), 200)]
+        [ProducesResponseType(typeof(Result<string>), 400)]
+        [ProducesResponseType(typeof(Result<string>), 500)]
         public async Task<ResultViewModel> CreateEmployeeAsync([FromBody] CreateEmployeeCommand model)
         {
             Logger.LogInformation($"Received request to create employee application");
@@ -90,6 +104,9 @@ namespace Medica_API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("update-employee")]
+        [ProducesResponseType(typeof(ResultViewModel), 200)]
+        [ProducesResponseType(typeof(Result<string>), 400)]
+        [ProducesResponseType(typeof(Result<string>), 500)]
         public async Task<ResultViewModel> UpdateEmployeeAsync([FromBody] UpdateEmployeeCommand model)
         {
             Logger.LogInformation($"Received request to update employee application");
@@ -100,10 +117,13 @@ namespace Medica_API.Controllers
         }
 
         /// <summary>
-        /// this endpoint is used to Update Employee
+        /// this endpoint is used to delete Employee
         /// </summary>
         /// <returns></returns>
         [HttpDelete("delete-employee")]
+        [ProducesResponseType(typeof(ResultViewModel), 200)]
+        [ProducesResponseType(typeof(Result<string>), 400)]
+        [ProducesResponseType(typeof(Result<string>), 500)]
         public async Task<ResultViewModel> DeleteEmployeeAsync([FromBody] DeleteEmployeeCommand model)
         {
             Logger.LogInformation($"Received request to delete employee application");
