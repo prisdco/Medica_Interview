@@ -13,7 +13,26 @@ namespace Medica_Interview.Service
 
         public async Task<IEnumerable<Employee>> GetEmployeesAsync()
         {
+            //var employees = new List<Employee>
+            //{
+            //    new Employee { ProfilePicture = "profile.jpg",
+            //    Telephone = "1234567890",
+            //    Team = "Development",
+            //    Address1 = "123 Main St",
+            //    Address2 = "Suite 100",
+            //    DateOfBirth = DateOnly.FromDateTime(DateTime.Parse("1990-01-01")),
+            //    Firstname = "John",
+            //    Lastname = "Doe",
+            //    Email = "prisdco@gmail.com",
+            //    StartDate = DateOnly.FromDateTime(DateTime.Parse("2020-01-01")),
+            //    County = "County A",
+            //    JobTitle = "Software Engineer",
+            //    LineManager = "Manager A",
+            //    Postcode = "12345",
+            //    Town = "Techville" }
+            //};
             return await _httpClient.GetFromJsonAsync<IEnumerable<Employee>>("https://localhost:7228/api/v1/Employee/all-employees");
+            //return employees;
         }
 
         public async Task<Employee> AddEmployeesAsync(EmployeeDTO employee)

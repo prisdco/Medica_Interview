@@ -147,7 +147,7 @@ else
         </BodyTemplate>
         <FooterTemplate>
             <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
-            <Button Color="ButtonColor.Primary" @onclick="OnSubmit">Save changes</Button>
+            <Button Color="ButtonColor.Primary" class="btn btn-primary" @onclick="OnSubmit">Save changes</Button>
         </FooterTemplate>
     </Modal>
 
@@ -158,7 +158,7 @@ else
                     Are you sure you want to delete this user?
                 </div>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-danger btn-sm" @onclick="ConfirmDelete">Yes</button>
+                    <button type="button" class="btn btn-danger btn-sm" id="btnDelete" @onclick="ConfirmDelete">Yes</button>
                     <button type="button" class="btn btn-secondary btn-sm" @onclick="CancelDelete">No</button>
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -181,6 +181,7 @@ else
 </script>
 
 @code {
+    [Parameter]
     public bool isProcessing { get; set; } = false;
     private HashSet<Employee> selectedEmployees = new();
     private IEnumerable<Models.Employee> employees;

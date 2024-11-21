@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="bunit" Version="1.36.0" />
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
     <PackageReference Include="FluentAssertions" Version="6.12.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.4" />
@@ -27,6 +28,7 @@
     <ProjectReference Include="..\Medica_API\Medica_API.csproj" />
     <ProjectReference Include="..\Medica_Interview.Application\Medica_Interview.Application.csproj" />
     <ProjectReference Include="..\Medica_Interview.Infrastructure\Medica_Interview.Infrastructure.csproj" />
+    <ProjectReference Include="..\Medica_Interview\Medica_Interview.csproj" />
   </ItemGroup>
 
   <ItemGroup>

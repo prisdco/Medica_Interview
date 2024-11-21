@@ -3,6 +3,7 @@ using MediatR;
 using Medica_Interview.Application.UseCase.Commands;
 using Medica_Interview.Application.UseCase.Queries.CsvFileData;
 using Medica_Interview.Application.UseCase.Queries.DatabaseSource;
+using Medica_Interview.Infrastructure.Entities;
 using Medica_Interview.Infrastructure.ServiceModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,7 @@ namespace Medica_API.Controllers
         ///
         [AllowAnonymous]
         [HttpGet("all-employees")]
-        [ProducesResponseType(typeof(ResultViewModel), 200)]
+        [ProducesResponseType(typeof(Result<IEnumerable<Employee>>), 200)]
         [ProducesResponseType(typeof(Result<string>), 400)]
         [ProducesResponseType(typeof(Result<string>), 500)]
 
